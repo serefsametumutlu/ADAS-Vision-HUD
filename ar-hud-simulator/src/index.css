@@ -2,38 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --hud-cyan: #00F0C8;
-    --hud-blue: #00E5FF;
-    --hud-warning: #FFB800;
-    --hud-danger: #FF3B3B;
-  }
-  html, body, #root {
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    background: #000;
-  }
-  ::-webkit-scrollbar { display: none; }
+html, body, #root { width: 100%; height: 100vh; overflow: hidden; background: #000; }
+::-webkit-scrollbar { display: none; }
+
+/* Global keyframes — used by both Tailwind animate-* classes and inline style={{ animation }} */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+@keyframes fadeInUp {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes scanLine {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
 }
 
-@layer utilities {
-  .text-glow-cyan {
-    text-shadow: 0 0 8px rgba(0, 240, 200, 0.8), 0 0 20px rgba(0, 240, 200, 0.4);
-  }
-  .text-glow-danger {
-    text-shadow: 0 0 8px rgba(255, 59, 59, 0.9), 0 0 20px rgba(255, 59, 59, 0.5);
-  }
-  .text-glow-warning {
-    text-shadow: 0 0 8px rgba(255, 184, 0, 0.9);
-  }
-  .border-glow-cyan {
-    border-color: rgba(0, 240, 200, 0.6);
-    box-shadow: 0 0 15px rgba(0, 240, 200, 0.3), inset 0 0 15px rgba(0, 240, 200, 0.1);
-  }
-  .backdrop-hud {
-    backdrop-filter: blur(8px) saturate(140%);
-    background: rgba(0, 20, 30, 0.4);
-  }
-}
+.text-glow-cyan    { text-shadow: 0 0 8px rgba(0, 240, 200, 0.8), 0 0 20px rgba(0, 240, 200, 0.4); }
+.text-glow-danger  { text-shadow: 0 0 8px rgba(255, 59, 59, 0.9); }
+.text-glow-warning { text-shadow: 0 0 8px rgba(255, 184, 0, 0.9); }
+.backdrop-hud      { backdrop-filter: blur(8px) saturate(140%); background: rgba(0, 20, 30, 0.4); }

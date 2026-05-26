@@ -1,57 +1,67 @@
+import { useSimulationStore } from '../../store/simulationStore';
 import { useState, useEffect } from 'react';
-import { MapPin } from 'lucide-react';
-import PulseDot from '../ui/PulseDot';
-
-const DAYS   = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-
-function formatDateTime(d) {
-  const day  = DAYS[d.getDay()];
-  const date = String(d.getDate()).padStart(2, '0');
-  const mon  = MONTHS[d.getMonth()];
-  const yr   = d.getFullYear();
-  const time = d.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  return `${day} · ${date} ${mon} ${yr} · ${time}`;
-}
-
-const STATUS_ITEMS = [
-  { label: 'GPS',  color: 'success' },
-  { label: 'ADAS', color: 'success' },
-  { label: 'NET',  color: 'success' },
-];
 
 export default function TopStatusBar() {
-  const [now, setNow] = useState(new Date());
+  const laneDetected  = useSimulationStore(s => s.laneDetected);
+  const destination   = useSimulationStore(s => s.destination);
+  const eta           = useSimulationStore(s => s.eta);
 
+  // Local clock — never touches the global store
+  const [now, setNow] = useState(() => new Date());
   useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
   }, []);
 
+  const dateStr = now.toLocaleDateString('tr-TR', {
+    weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
+  });
+  const timeStr = now.toLocaleTimeString('tr-TR', {
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+  });
+
   return (
-    <div className="fixed top-0 inset-x-0 h-10 z-40 flex items-center justify-between px-6
-                    bg-black/60 backdrop-blur-sm border-b border-hud-cyan/20">
-      {/* Left — GPS coordinates */}
-      <div className="flex items-center gap-2">
-        <MapPin size={12} color="rgba(0,240,200,0.5)" />
-        <span className="font-mono text-xs text-hud-cyan/70 tracking-widest uppercase">
-          37.8746°N · 32.4932°E
-        </span>
+    <div
+      className="fixed top-0 left-0 right-0 z-[11] pointer-events-none flex items-center justify-between px-5 py-2"
+      style={{ background: 'linear-gradient(to bottom, rgba(0,10,18,0.75) 0%, transparent 100%)' }}
+    >
+      {/* Left: GPS + dest */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-hud-cyan animate-pulse" />
+          <span className="text-[10px] font-mono tracking-widest text-hud-cyan uppercase">GPS LOCK</span>
+        </div>
+        <span className="text-[10px] font-mono text-white/50 tracking-wider">→ {destination}</span>
+        <span className="text-[10px] font-mono text-hud-warning tracking-wider">ETA {eta}</span>
       </div>
 
-      {/* Center — Live date + time */}
-      <span className="font-mono text-xs text-hud-cyan/80 tracking-widest uppercase">
-        {formatDateTime(now)}
-      </span>
+      {/* Center: date / time */}
+      <div className="text-center">
+        <div className="text-[10px] font-mono tracking-widest text-white/40">{dateStr}</div>
+        <div className="text-sm font-tech font-bold text-hud-cyan tracking-widest" style={{ textShadow: '0 0 8px #00F0C8' }}>
+          {timeStr}
+        </div>
+      </div>
 
-      {/* Right — Status dots */}
-      <div className="flex items-center gap-5">
-        {STATUS_ITEMS.map(({ label, color }) => (
-          <div key={label} className="flex items-center gap-1.5">
-            <span className="font-mono text-xs text-hud-cyan/60 tracking-widest uppercase">{label}</span>
-            <PulseDot color={color} size="sm" />
-          </div>
-        ))}
+      {/* Right: LANE + NET */}
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1.5">
+          <div
+            className="w-2 h-2 rounded-full"
+            style={{
+              background: laneDetected ? '#22C55E' : '#FF3B3B',
+              boxShadow: `0 0 5px ${laneDetected ? '#22C55E' : '#FF3B3B'}`,
+              animation: laneDetected ? 'none' : 'pulseGlow 1s infinite',
+            }}
+          />
+          <span className="text-[10px] font-mono tracking-widest text-white/60 uppercase">
+            LANE {laneDetected ? 'OK' : 'LOST'}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-hud-blue" style={{ boxShadow: '0 0 5px #00E5FF', animation: 'pulseGlow 2s infinite' }} />
+          <span className="text-[10px] font-mono tracking-widest text-hud-blue uppercase">5G</span>
+        </div>
       </div>
     </div>
   );
