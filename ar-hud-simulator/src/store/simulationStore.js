@@ -42,8 +42,12 @@ export const useSimulationStore = create((set, get) => ({
     cruiseEnabled: true,
     autoBrakeEnabled: true,
     laneKeepEnabled: true,
+    blindSpotEnabled: true,
     autonomyLevel: 2,
   },
+
+  // === LANE ===
+  lane: 1, // 0=left, 1=center, 2=right
 
   // === UYARILAR ===
   warnings: [],
@@ -54,6 +58,7 @@ export const useSimulationStore = create((set, get) => ({
   devPanelOpen: false,
   detectionEnabled: true,
   bootComplete: false,
+  helpOpen: false,
 
 
   // === ACTIONS ===
@@ -73,6 +78,10 @@ export const useSimulationStore = create((set, get) => ({
   toggleDevPanel: () => set(s => ({ devPanelOpen: !s.devPanelOpen })),
   toggleDetection: () => set(s => ({ detectionEnabled: !s.detectionEnabled })),
   setBootComplete: (b) => set({ bootComplete: b }),
+  setHelpOpen: (v) => set({ helpOpen: v }),
+  setGear: (g) => set({ gear: g }),
+  setLane: (l) => set({ lane: l }),
+  setADAS: (key, val) => set(s => ({ adas: { ...s.adas, [key]: val } })),
 
   addWarning: (warning) => {
     const id = Date.now() + Math.random();
