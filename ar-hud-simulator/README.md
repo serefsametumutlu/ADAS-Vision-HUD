@@ -21,7 +21,7 @@
      https://github.com/user-attachments/assets/BURAYA-YAPISTIR
      ============================================================ -->
 
-https://github.com/user-attachments/assets/DEMO_VIDEO_BURAYA
+[https://github.com/user-attachments/assets/DEMO_VIDEO_BURAYA](https://github.com/user-attachments/assets/96883da4-aa56-427d-855b-053c4ae186ab)
 
 </div>
 
